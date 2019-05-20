@@ -4,9 +4,10 @@ declare(strict_types=1);
 include __DIR__.'/../vendor/autoload.php';
 
 use pointybeard\Helpers\Cli\Input;
+use pointybeard\Helpers\Cli\Colour\Colour;
 use pointybeard\Helpers\Functions\Flags;
 use pointybeard\Helpers\Functions\Strings;
-use pointybeard\Helpers\Cli\Colour\Colour;
+use pointybeard\Helpers\Functions\Cli;
 
 // Define what we are expecting to get from the command line
 $collection = (new Input\InputCollection())
@@ -52,87 +53,31 @@ $collection = (new Input\InputCollection())
 // and validate the input according to our collection
 $argv = Input\InputHandlerFactory::build('Argv', $collection);
 
-// Example of using an input collection to generate a usage string
-function usage(Input\InputCollection $collection): string {
-    $arguments = [];
-    foreach ($collection->getArguments() as $a) {
-        $arguments[] = strtoupper(
-            // Wrap with square brackets if it's not required
-            Flags\is_flag_set(Input\AbstractInputType::FLAG_OPTIONAL, $a->flags()) ||
-            !Flags\is_flag_set(Input\AbstractInputType::FLAG_REQUIRED, $a->flags())
-                ? "[{$a->name()}]"
-                : $a->name()
-        );
-    }
-    $arguments = trim(implode($arguments, ' '));
-    return sprintf(
-        "Usage: php -f example.php -- [OPTIONS]... %s%s",
-        $arguments,
-        strlen($arguments) > 0 ? '...' : ''
-    );
-}
-
-// Example of using an input collection to generate a manual page
-function manpage(Input\InputCollection $collection) : string {
-
-    $arguments = $options = [];
-
-    foreach ($collection->getArguments() as $a) {
-        $arguments[] = (string) $a;
-    }
-
-    foreach ($collection->getOptions() as $o) {
-        $options[] = (string) $o;
-    }
-
-    $arguments = implode($arguments, PHP_EOL.'  ');
-    $options = implode($options, PHP_EOL.'  ');
-
-    return sprintf('%s 1.0.0, %s
-%s
-
-Mandatory values for long options are mandatory for short options too.
-
-Arguments:
-  %s
-
-Options:
-  %s
-
-Examples:
-  php -f example/example.php -- -vvv -d example/example.json import
-',
-        basename(__FILE__),
-        Strings\utf8_wordwrap(
-            "An example script for the PHP Helpers: Command-line Input and Input Type Handlers composer library (pointybeard/helpers-cli-input)."
-        ),
-        usage($collection),
-        $arguments,
-        $options
-    );
-}
-
 // Display the manual in green text
-echo Colour::colourise(manpage($collection), Colour::FG_GREEN) . PHP_EOL . PHP_EOL;
+echo Colour::colourise(Cli\manpage(
+    basename(__FILE__),
+    '1.0.1',
+    'An example script for the PHP Helpers: Command-line Input and Input Type Handlers composer library (pointybeard/helpers-cli-input).',
+    'php -f example/example.php -- -vvv -d example/example.json import',
+    $collection
+), Colour::FG_GREEN) . PHP_EOL . PHP_EOL;
 
-/*
-example.php 1.0.0, An example script for the PHP Helpers: Command-line Input and Input Type Handlers
-composer library (pointybeard/helpers-cli-input).
-Usage: php -f example.php -- [OPTIONS]... ACTION...
-
-Mandatory values for long options are mandatory for short options too.
-
-Arguments:
-  ACTION              The name of the action to perform
-
-Options:
-  -v                                  verbosity level. -v (errors only), -vv (warnings
-                                      and errors), -vvv (everything).
-  -d, --data=VALUE                    Path to the input JSON data
-
-Examples:
-  php -f example/example.php -- -vvv -d example/example.json import
-*/
+// example.php 1.0.0, An example script for the PHP Helpers: Command-line Input and Input Type Handlers
+// composer library (pointybeard/helpers-cli-input).
+// Usage: example.php [OPTIONS]... ACTION...
+//
+// Mandatory values for long options are mandatory for short options too.
+//
+// Arguments:
+//   ACTION              The name of the action to perform
+//
+// Options:
+//   -v                                  verbosity level. -v (errors only), -vv (warnings
+//                                       and errors), -vvv (everything).
+//   -d, --data=VALUE                    Path to the input JSON data
+//
+// Examples:
+//   php -f example/example.php -- -vvv -d example/example.json import
 
 var_dump($argv->getArgument('action'));
 // string(6) "import"
