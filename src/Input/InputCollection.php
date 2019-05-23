@@ -77,7 +77,7 @@ class InputCollection
 
     public function getArgumentsByIndex(int $index): ?AbstractInputType
     {
-        return $this->arguments[$index];
+        return $this->arguments[$index] ?? null;
     }
 
     public function getArguments(): array
