@@ -85,7 +85,7 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
             }
         }
 
-        throw new Exceptions\InputNotFoundException($name);
+        return null;
     }
 
     public function getInput(): array
