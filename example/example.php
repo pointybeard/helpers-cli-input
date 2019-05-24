@@ -92,31 +92,26 @@ echo Cli\manpage(
 // Examples:
 // php -f example/example.php -- -vvvs -d example/example.json import
 
-try{
 
-    var_dump($argv->find('action'));
-    // string(6) "import"
+var_dump($argv->find('action'));
+// string(6) "import"
 
-    var_dump($argv->find('v'));
-    //int(3)
+var_dump($argv->find('v'));
+//int(3)
 
-    var_dump($argv->find('s'));
-    //bool(true)
+var_dump($argv->find('s'));
+//bool(true)
 
-    var_dump($argv->find('data'));
-    // class stdClass#11 (1) {
-    //   public $fruit =>
-    //   array(2) {
-    //     [0] =>
-    //     string(5) "apple"
-    //     [1] =>
-    //     string(6) "banana"
-    //   }
-    // }
+var_dump($argv->find('data'));
+// class stdClass#11 (1) {
+//   public $fruit =>
+//   array(2) {
+//     [0] =>
+//     string(5) "apple"
+//     [1] =>
+//     string(6) "banana"
+//   }
+// }
 
-    var_dump($argv->find('nope-doesnt-exist'));
-
-} catch(\Exception $ex) {
-    echo "Error: " . $ex->getMessage() . PHP_EOL;
-}
-//Error trying to access input. Returned: Input nope-doesnt-exist could not be found.
+var_dump($argv->find('nope-doesnt-exist'));
+// NULL

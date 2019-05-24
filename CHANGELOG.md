@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 **View all [Unreleased][] changes here**
 
+## [1.1.1][]
+#### Changed
+-   `AbstractInputHandler::find()` returns NULL if it cannot find any input with the supplied name. It is easier to test for NULL than it is to catch an exception.
+
 ## [1.1.0][]
 #### Added
 -   Expanded input types to include `Flag`, `IncrementingFlag`, and `LongOption`.
@@ -30,7 +34,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 -   Initial release
 
-[Unreleased]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.0...integration
+[Unreleased]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.1...integration
+[1.1.1]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/pointybeard/helpers-functions-cli/compare/1.0.3...1.1.0
 [1.0.3]: https://github.com/pointybeard/helpers-functions-cli/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/pointybeard/helpers-functions-cli/compare/1.0.1...1.0.2
