@@ -12,15 +12,9 @@ interface InputHandlerInterface
 
     public function validate(): void;
 
-    public function getArgument(string $name): ?string;
+    public function find(string $name);
 
-    // note that the return value of getOption() isn't always going to be
-    // a string like getArgument()
-    public function getOption(string $name);
-
-    public function getArguments(): array;
-
-    public function getOptions(): array;
+    public function getInput(): array;
 
     public function getCollection(): ?Input\InputCollection;
 }

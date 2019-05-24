@@ -8,8 +8,7 @@ use pointybeard\Helpers\Functions\Flags;
 
 abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
 {
-    protected $options = [];
-    protected $arguments = [];
+    protected $input = [];
     protected $collection = null;
 
     abstract protected function parse(): bool;
@@ -17,8 +16,7 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
     public function bind(InputCollection $inputCollection, bool $skipValidation = false): bool
     {
         // Do the binding stuff here
-        $this->options = [];
-        $this->arguments = [];
+        $this->input = [];
         $this->collection = $inputCollection;
 
         $this->parse();
@@ -43,71 +41,56 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
 
     public function validate(): void
     {
-        // Do basic missing option and value checking here
-        foreach ($this->collection->getOptions() as $input) {
-            self::checkRequiredAndRequiredValue($input, $this->options);
-        }
+        foreach ($this->collection->getItems() as $type => $items) {
+            foreach($items as $input) {
+                self::checkRequiredAndRequiredValue($input, $this->input);
 
-        // Option validation.
-        foreach ($this->collection->getoptions() as $o) {
-            $result = false;
+                if(
+                    null !== $input->default() &&
+                    null === $this->find($input->name()) &&
+                    null === $input->validator()
+                ) {
+                    $result = $input->default();
+                } elseif(null !== $input->validator()) {
+                    $validator = $input->validator();
 
-            if (!array_key_exists($o->name(), $this->options)) {
-                $result = $o->default();
-            } else {
-                if (null === $o->validator()) {
-                    $result = $o->default();
-                    continue;
-                } elseif ($o->validator() instanceof \Closure) {
-                    $validator = new Validator($o->validator());
-                } elseif ($o->validator() instanceof Validator) {
-                    $validator = $o->validator();
+                    if ($validator instanceof \Closure) {
+                        $validator = new Validator($validator);
+                    } elseif (!($validator instanceof Validator)) {
+                        throw new \Exception("Validator for '{$input->name()}' must be NULL or an instance of either Closure or Input\Validator.");
+                    }
+
+                    $result = $validator->validate($input, $this);
                 } else {
-                    throw new \Exception("Validator for option {$o->name()}  must be NULL or an instance of either Closure or Input\Validator.");
+                    $result = $this->find($input->name());
                 }
 
-                $result = $validator->validate($o, $this);
-            }
-
-            $this->options[$o->name()] = $result;
-        }
-
-        // Argument validation.
-        foreach ($this->collection->getArguments() as $a) {
-            self::checkRequiredAndRequiredValue($a, $this->arguments);
-
-            if (isset($this->arguments[$a->name()]) && null !== $a->validator()) {
-                if ($a->validator() instanceof \Closure) {
-                    $validator = new Validator($a->validator());
-                } elseif ($a->validator() instanceof Validator) {
-                    $validator = $a->validator();
-                } else {
-                    throw new \Exception("Validator for argument {$a->name()} must be NULL or an instance of either Closure or Input\Validator.");
-                }
-
-                $validator->validate($a, $this);
+                $this->input[$input->name()] = $result;
             }
         }
     }
 
-    public function getArgument(string $name): ?string
+    public function find(string $name)
     {
-        return $this->arguments[$name] ?? null;
+        if(isset($this->input[$name])) {
+            return $this->input[$name];
+        }
+
+        // Check the collection to see if anything responds to $name
+        foreach($this->collection->getItems() as $type => $items) {
+            foreach($items as $ii) {
+                if($ii->respondsTo($name) && isset($this->input[$ii->name()])) {
+                    return $this->input[$ii->name()];
+                }
+            }
+        }
+
+        throw new Exceptions\InputNotFoundException($name);
     }
 
-    public function getOption(string $name)
+    public function getInput(): array
     {
-        return $this->options[$name] ?? null;
-    }
-
-    public function getArguments(): array
-    {
-        return $this->arguments;
-    }
-
-    public function getOptions(): array
-    {
-        return $this->options;
+        return $this->input;
     }
 
     public function getCollection(): ?InputCollection

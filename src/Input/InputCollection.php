@@ -6,8 +6,7 @@ namespace pointybeard\Helpers\Cli\Input;
 
 class InputCollection
 {
-    private $arguments = [];
-    private $options = [];
+    private $items = [];
 
     // Prevents the class from being instanciated
     public function __construct()
@@ -17,96 +16,77 @@ class InputCollection
     public function append(Interfaces\InputTypeInterface $input, bool $replace = false): self
     {
         $class = new \ReflectionClass($input);
-        $this->{'append'.$class->getShortName()}($input, $replace);
+
+        $index = null;
+        $type = null;
+
+        if (!$replace && null !== $this->find($input->name(), null, null, $index, $type)) {
+            throw new \Exception("{$class->getShortName()} '{$input->name()}' already exists in this collection");
+        }
+
+        if (true == $replace && null !== $index) {
+            $this->items[$class->getShortName()][$index] = $argument;
+        } else {
+            $this->items[$class->getShortName()][] = $input;
+        }
 
         return $this;
     }
 
-    public function findArgument(string $name, ?int &$index = null): ?AbstractInputType
+    public function find(string $name, array $restrictToType=null, array $excludeType=null, &$type = null, &$index = null): ?AbstractInputType
     {
-        foreach ($this->arguments as $index => $a) {
-            if ($a->name() == $name) {
-                return $a;
+        foreach($this->items as $type => $items) {
+
+            // Check if we're restricting to or excluding specific types
+            if(null !== $restrictToType && !in_array($type, $restrictToType)) {
+                continue;
+
+            } elseif(null !== $excludeType && in_array($type, $excludeType)) {
+                continue;
+            }
+
+            foreach($items as $index => $item) {
+                if($item->respondsTo($name)) {
+                    return $item;
+                }
             }
         }
-
+        $type = null;
         $index = null;
-
         return null;
     }
 
-    public function findOption(string $name, ?int &$index = null): ?AbstractInputType
-    {
-        $type = 1 == strlen($name) ? 'name' : 'long';
-
-        foreach ($this->options as $index => $o) {
-            if ($o->$type() == $name) {
-                return $o;
-            }
-        }
-
-        $index = null;
-
-        return null;
+    public function getTypes(): array {
+        return array_keys($this->items);
     }
 
-    private function appendArgument(Interfaces\InputTypeInterface $argument, bool $replace = false): void
-    {
-        if (null !== $this->findArgument($argument->name(), $index) && !$replace) {
-            throw new \Exception("Argument {$argument->name()} already exists in collection");
-        }
-
-        if (true == $replace && null !== $index) {
-            $this->arguments[$index] = $argument;
-        } else {
-            $this->arguments[] = $argument;
-        }
+    public function getItems(): array {
+        return $this->items;
     }
 
-    private function appendOption(Interfaces\InputTypeInterface $option, bool $replace = false): void
-    {
-        if (null !== $this->findOption($option->name(), $index) && !$replace) {
-            throw new \Exception("Option -{$option->name()} already exists in collection");
-        }
-        if (true == $replace && null !== $index) {
-            $this->options[$index] = $option;
-        } else {
-            $this->options[] = $option;
-        }
+    public function getItemsByType(string $type): array {
+        return $this->items[$type] ?? [];
     }
 
-    public function getArgumentsByIndex(int $index): ?AbstractInputType
-    {
-        return $this->arguments[$index] ?? null;
-    }
-
-    public function getArguments(): array
-    {
-        return $this->arguments;
-    }
-
-    public function getOptions(): array
-    {
-        return $this->options;
+    public function getItemByIndex(string $type, int $index): ?AbstractInputType {
+        return $this->items[$type][$index] ?? null;
     }
 
     public static function merge(self ...$collections): self
     {
-        $arguments = [];
-        $options = [];
+        $items = [];
 
         foreach ($collections as $c) {
-            $arguments = array_merge($arguments, $c->getArguments());
-            $options = array_merge($options, $c->getOptions());
+            foreach($c->items() as $type => $items) {
+                foreach($items as $item) {
+                    $items[] = $item;
+                }
+            }
         }
 
         $mergedCollection = new self();
 
-        $it = new \AppendIterator();
-        $it->append(new \ArrayIterator($arguments));
-        $it->append(new \ArrayIterator($options));
-
-        foreach ($it as $input) {
+        foreach ($items as $input) {
             try {
                 $mergedCollection->append($input, true);
             } catch (\Exception $ex) {

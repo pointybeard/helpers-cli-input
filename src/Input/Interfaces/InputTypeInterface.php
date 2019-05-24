@@ -16,4 +16,5 @@ interface InputTypeInterface
     const FLAG_TYPE_INCREMENTING = 0x0400;
 
     public function getType(): string;
+    public function respondsTo(string $name): bool;
 }
