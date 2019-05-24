@@ -6,6 +6,7 @@ namespace pointybeard\Helpers\Cli\Input\Types;
 
 use pointybeard\Helpers\Functions\Flags;
 use pointybeard\Helpers\Functions\Strings;
+use pointybeard\Helpers\Functions\Cli;
 use pointybeard\Helpers\Cli\Input;
 
 class Option extends Input\AbstractInputType
@@ -22,19 +23,56 @@ class Option extends Input\AbstractInputType
 
     public function __toString()
     {
-        $long = null !== $this->long() ? ', --'.$this->long() : null;
-        if (null != $long) {
+        // MAGIC VALUES!!! OH MY.....
+        $padCharacter = ' ';
+        $paddingBufferSize = 0.15; // 15%
+        $optionNamePaddedWidth = 30;
+        $minimumWindowWidth = 80;
+        $secondaryLineIndentlength = 2;
+
+        // Get the window dimensions but restrict width to minimum
+        // of $minimumWindowWidth
+        $window = Cli\get_window_size();
+        $window['cols'] = max($minimumWindowWidth, $window['cols']);
+
+        // This shrinks the total line length (derived by the window width) by
+        // $paddingBufferSize
+        $paddingBuffer = (int) ceil($window['cols'] * $paddingBufferSize);
+
+        // Create a string of $padCharacter which is prepended to each secondary
+        // line
+        $secondaryLineLeadPadding = str_pad(
+            '',
+            $optionNamePaddedWidth,
+            $padCharacter,
+            STR_PAD_LEFT
+        );
+
+        $short = '-'.$this->name();
+        $long = null;
+
+        if (null !== $this->long()) {
+            $long = '--'.$this->long();
             if (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_REQUIRED)) {
                 $long .= '=VALUE';
             } elseif (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_OPTIONAL)) {
                 $long .= '[=VALUE]';
             }
         }
-        $first = str_pad(sprintf('-%s%s    ', $this->name(), $long), 36, ' ');
 
-        $second = Strings\utf8_wordwrap_array($this->description(), 40);
+        $first = Strings\mb_str_pad(
+            $short.(null !== $long ? ", {$long}" : ''), // -O, --LONG,
+            $optionNamePaddedWidth,
+            $padCharacter
+        );
+
+        $second = Strings\utf8_wordwrap_array(
+            $this->description(),
+            $window['cols'] - $optionNamePaddedWidth - $paddingBuffer
+        );
+
         for ($ii = 1; $ii < count($second); ++$ii) {
-            $second[$ii] = str_pad('', 38, ' ', \STR_PAD_LEFT).$second[$ii];
+            $second[$ii] = $secondaryLineLeadPadding.$second[$ii];
         }
 
         return $first.implode($second, PHP_EOL);

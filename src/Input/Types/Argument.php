@@ -6,18 +6,51 @@ namespace pointybeard\Helpers\Cli\Input\Types;
 
 use pointybeard\Helpers\Cli\Input;
 use pointybeard\Helpers\Functions\Strings;
+use pointybeard\Helpers\Functions\Cli;
 
 class Argument extends Input\AbstractInputType
 {
     public function __toString()
     {
-        $name = strtoupper($this->name());
+        // MAGIC VALUES!!! OH MY.....
+        $padCharacter = ' ';
+        $paddingBufferSize = 0.15; // 15%
+        $argumentNamePaddedWidth = 20;
+        $argumentNameMinimumPaddingWidth = 4;
+        $minimumWindowWidth = 80;
 
-        $first = str_pad(sprintf('%s    ', $name), 20, ' ');
+        // Get the window dimensions but restrict width to minimum
+        // of $minimumWindowWidth
+        $window = Cli\get_window_size();
+        $window['cols'] = max($minimumWindowWidth, $window['cols']);
 
-        $second = Strings\utf8_wordwrap_array($this->description(), 40);
+        // This shrinks the total line length (derived by the window width) by
+        // $paddingBufferSize
+        $paddingBuffer = (int) ceil($window['cols'] * $paddingBufferSize);
+
+        // Create a string of $padCharacter which is prepended to each secondary
+        // line
+        $secondaryLineLeadPadding = str_pad(
+            '',
+            $argumentNamePaddedWidth,
+            $padCharacter,
+            STR_PAD_LEFT
+        );
+
+        $first = Strings\mb_str_pad(
+            strtoupper($this->name()).str_repeat($padCharacter, $argumentNameMinimumPaddingWidth),
+            $argumentNamePaddedWidth,
+            $padCharacter
+        );
+
+        $second = Strings\utf8_wordwrap_array(
+            $this->description(),
+            $window['cols'] - $argumentNamePaddedWidth - $paddingBuffer
+        );
+
+        // Skip the first item (notice $ii starts at value of '1')
         for ($ii = 1; $ii < count($second); ++$ii) {
-            $second[$ii] = str_pad('', 22, ' ', \STR_PAD_LEFT).$second[$ii];
+            $second[$ii] = $secondaryLineLeadPadding.$second[$ii];
         }
 
         return $first.implode($second, PHP_EOL);
