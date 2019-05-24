@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace pointybeard\Helpers\Cli\Input\Types;
 
-use pointybeard\Helpers\Cli\Input;
+use pointybeard\Helpers\Functions\Flags;
 use pointybeard\Helpers\Functions\Strings;
 use pointybeard\Helpers\Functions\Cli;
+use pointybeard\Helpers\Cli\Input;
 
-class Argument extends Input\AbstractInputType
+class LongOption extends Input\AbstractInputType
 {
+    protected $short;
 
-    public function __construct(string $name = null, int $flags = null, string $description = null, object $validator = null, $default=null)
+    public function __construct(string $name = null, string $short = null, int $flags = null, string $description = null, object $validator = null, $default = false)
     {
-        if(null === $validator) {
-            $validator = function (Input\AbstractInputType $input, Input\AbstractInputHandler $context) {
-                // This dummy validator is necessary otherwise the argument
-                // value is ALWAYS set to default (most often NULL) regardless
-                // of if the argument was set or not
-                return $context->find($input->name());
-            };
-        }
-
+        $this->short = $short;
         parent::__construct($name, $flags, $description, $validator, $default);
+    }
+
+    public function respondsTo(string $name): bool
+    {
+        return ($name == $this->name || $name == $this->short);
     }
 
     public function __toString()
@@ -30,9 +29,9 @@ class Argument extends Input\AbstractInputType
         // MAGIC VALUES!!! OH MY.....
         $padCharacter = ' ';
         $paddingBufferSize = 0.15; // 15%
-        $argumentNamePaddedWidth = 20;
-        $argumentNameMinimumPaddingWidth = 4;
+        $optionNamePaddedWidth = 30;
         $minimumWindowWidth = 80;
+        $secondaryLineIndentlength = 2;
 
         // Get the window dimensions but restrict width to minimum
         // of $minimumWindowWidth
@@ -47,23 +46,32 @@ class Argument extends Input\AbstractInputType
         // line
         $secondaryLineLeadPadding = str_pad(
             '',
-            $argumentNamePaddedWidth,
+            $optionNamePaddedWidth,
             $padCharacter,
             STR_PAD_LEFT
         );
 
+        $short = null !== $this->short() ? '-'.$this->short() : null;
+        $long = null;
+
+        $long = '--'.$this->name();
+        if (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_REQUIRED)) {
+            $long .= '=VALUE';
+        } elseif (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_OPTIONAL)) {
+            $long .= '[=VALUE]';
+        }
+
         $first = Strings\mb_str_pad(
-            strtoupper($this->name()).str_repeat($padCharacter, $argumentNameMinimumPaddingWidth),
-            $argumentNamePaddedWidth,
+            (null !== $short ? "{$short}, " : '').$long, // -O, --LONG,
+            $optionNamePaddedWidth,
             $padCharacter
         );
 
         $second = Strings\utf8_wordwrap_array(
             $this->description(),
-            $window['cols'] - $argumentNamePaddedWidth - $paddingBuffer
+            $window['cols'] - $optionNamePaddedWidth - $paddingBuffer
         );
 
-        // Skip the first item (notice $ii starts at value of '1')
         for ($ii = 1; $ii < count($second); ++$ii) {
             $second[$ii] = $secondaryLineLeadPadding.$second[$ii];
         }

@@ -11,16 +11,6 @@ use pointybeard\Helpers\Cli\Input;
 
 class Option extends Input\AbstractInputType
 {
-    protected $long;
-    protected $default;
-
-    public function __construct(string $name, string $long = null, int $flags = null, string $description = null, object $validator = null, $default = false)
-    {
-        $this->default = $default;
-        $this->long = $long;
-        parent::__construct($name, $flags, $description, $validator);
-    }
-
     public function __toString()
     {
         // MAGIC VALUES!!! OH MY.....
@@ -49,19 +39,9 @@ class Option extends Input\AbstractInputType
         );
 
         $short = '-'.$this->name();
-        $long = null;
-
-        if (null !== $this->long()) {
-            $long = '--'.$this->long();
-            if (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_REQUIRED)) {
-                $long .= '=VALUE';
-            } elseif (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_OPTIONAL)) {
-                $long .= '[=VALUE]';
-            }
-        }
 
         $first = Strings\mb_str_pad(
-            $short.(null !== $long ? ", {$long}" : ''), // -O, --LONG,
+            $short,
             $optionNamePaddedWidth,
             $padCharacter
         );
