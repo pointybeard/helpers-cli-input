@@ -15,11 +15,10 @@ class RequiredInputMissingValueException extends \Exception
         $this->input = $input;
 
         return parent::__construct(sprintf(
-            '%s %s%s is missing a value',
-            $input->getType(),
-            'option' == $input->getType() ? '-' : '',
-            'option' == $input->getType() ? $input->name() : strtoupper($input->name())
+            'a value is required for %s',
+            $input->getDisplayName()
         ), $code, $previous);
+
     }
 
     public function getInput(): Input\AbstractInputType

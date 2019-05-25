@@ -15,10 +15,8 @@ class RequiredInputMissingException extends \Exception
         $this->input = $input;
 
         return parent::__construct(sprintf(
-            'missing %s %s%s',
-            $input->getType(),
-            'option' == $input->getType() ? '-' : '',
-            'option' == $input->getType() ? $input->name() : strtoupper($input->name())
+            'missing %s',
+            $input->getDisplayName()
         ), $code, $previous);
     }
 
