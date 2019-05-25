@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 **View all [Unreleased][] changes here**
 
+## [1.1.2][]
+#### Added
+-   Added `InputValidationFailedException` exception
+-   Added `InputTypeInterface::getDisplayName()` method to standardise how the name of an `InputTypeInterface` class wants to display it's name
+
+#### Changed
+-   Updated validation logic for inputs that have a validator, no default, and are not set.
+-   Throwing `InputValidationFailedException` exception when validation fails
+-   Updated `RequiredInputMissingException` and `RequiredInputMissingValueException` exceptions to use `InputTypeInterface::getDisplayName()` when producing their message
+-   Removed unused `RequiredArgumentMissingException` exception
+
 ## [1.1.1][]
 #### Changed
 -   `AbstractInputHandler::find()` returns NULL if it cannot find any input with the supplied name. It is easier to test for NULL than it is to catch an exception.
@@ -34,7 +45,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 -   Initial release
 
-[Unreleased]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.1...integration
+[Unreleased]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.2...integration
+[1.1.2]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/pointybeard/helpers-functions-cli/compare/1.0.3...1.1.0
 [1.0.3]: https://github.com/pointybeard/helpers-functions-cli/compare/1.0.2...1.0.3
