@@ -25,7 +25,11 @@ class Argument extends Input\AbstractInputType
         parent::__construct($name, $flags, $description, $validator, $default);
     }
 
-    public function __toString()
+    public function getDisplayName(): string {
+        return strtoupper($this->name());
+    }
+
+    public function __toString(): string
     {
         // MAGIC VALUES!!! OH MY.....
         $padCharacter = ' ';
@@ -53,7 +57,7 @@ class Argument extends Input\AbstractInputType
         );
 
         $first = Strings\mb_str_pad(
-            strtoupper($this->name()).str_repeat($padCharacter, $argumentNameMinimumPaddingWidth),
+            $this->getDisplayName().str_repeat($padCharacter, $argumentNameMinimumPaddingWidth),
             $argumentNamePaddedWidth,
             $padCharacter
         );

@@ -24,7 +24,18 @@ class LongOption extends Input\AbstractInputType
         return ($name == $this->name || $name == $this->short);
     }
 
-    public function __toString()
+    public function getDisplayName(): string {
+
+        $short =
+            null !== $this->short()
+            ? '-'.$this->short().', '
+            : null
+        ;
+
+        return sprintf("%s--%s", $short, $this->name());
+    }
+
+    public function __toString(): string
     {
         // MAGIC VALUES!!! OH MY.....
         $padCharacter = ' ';
@@ -51,10 +62,7 @@ class LongOption extends Input\AbstractInputType
             STR_PAD_LEFT
         );
 
-        $short = null !== $this->short() ? '-'.$this->short() : null;
-        $long = null;
-
-        $long = '--'.$this->name();
+        $long = $this->getDisplayName();
         if (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_REQUIRED)) {
             $long .= '=VALUE';
         } elseif (Flags\is_flag_set($this->flags(), self::FLAG_VALUE_OPTIONAL)) {
@@ -62,7 +70,7 @@ class LongOption extends Input\AbstractInputType
         }
 
         $first = Strings\mb_str_pad(
-            (null !== $short ? "{$short}, " : '').$long, // -O, --LONG,
+            $long, // -O, --LONG,
             $optionNamePaddedWidth,
             $padCharacter
         );

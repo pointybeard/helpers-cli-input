@@ -11,7 +11,11 @@ use pointybeard\Helpers\Cli\Input;
 
 class Option extends Input\AbstractInputType
 {
-    public function __toString()
+    public function getDisplayName(): string {
+        return '-'.$this->name();
+    }
+
+    public function __toString(): string
     {
         // MAGIC VALUES!!! OH MY.....
         $padCharacter = ' ';
@@ -38,10 +42,8 @@ class Option extends Input\AbstractInputType
             STR_PAD_LEFT
         );
 
-        $short = '-'.$this->name();
-
         $first = Strings\mb_str_pad(
-            $short,
+            $this->getDisplayName(),
             $optionNamePaddedWidth,
             $padCharacter
         );

@@ -17,4 +17,6 @@ interface InputTypeInterface
 
     public function getType(): string;
     public function respondsTo(string $name): bool;
+    public function __toString(): string;
+    public function getDisplayName(): string;
 }
