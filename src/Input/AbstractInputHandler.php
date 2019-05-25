@@ -45,13 +45,17 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
             foreach($items as $input) {
                 self::checkRequiredAndRequiredValue($input, $this->input);
 
+                // There is a default value, input has not been set, and there
+                // is no validator
                 if(
                     null !== $input->default() &&
                     null === $this->find($input->name()) &&
                     null === $input->validator()
                 ) {
                     $result = $input->default();
-                } elseif(null !== $input->validator()) {
+
+                // Input has been set and it has a validator
+                } elseif(null !== $this->find($input->name()) && null !== $input->validator()) {
                     $validator = $input->validator();
 
                     if ($validator instanceof \Closure) {
@@ -60,7 +64,13 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
                         throw new \Exception("Validator for '{$input->name()}' must be NULL or an instance of either Closure or Input\Validator.");
                     }
 
-                    $result = $validator->validate($input, $this);
+                    try {
+                        $result = $validator->validate($input, $this);
+                    } catch(\Exception $ex) {
+                        throw new Exceptions\InputValidationFailedException($input, 0, $ex);
+                    }
+
+                // No default, no validator, but may or may not have been set
                 } else {
                     $result = $this->find($input->name());
                 }
