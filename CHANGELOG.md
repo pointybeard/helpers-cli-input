@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 **View all [Unreleased][] changes here**
 
+## [1.1.4][]
+#### Fixed
+-   Fixed misnamed variable in `InputCollection::merge()`
+
 ## [1.1.3][]
 #### Fixed
 -   Fixed logic bug that prevented `$index` and `$type` from being set in `InputCollection::append()`. This means replaceing items in an `InputCollection` now works as expected.
@@ -49,8 +53,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 -   Initial release
 
-[Unreleased]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.3...integration
-[1.1.2]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.2...1.1.3
+[Unreleased]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.4...integration
+[1.1.4]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.3...1.1.4
+[1.1.3]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/pointybeard/helpers-functions-cli/compare/1.0.3...1.1.0
