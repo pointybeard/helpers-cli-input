@@ -17,15 +17,12 @@ class InputCollection
     {
         $class = new \ReflectionClass($input);
 
-        $index = null;
-        $type = null;
-
-        if (!$replace && null !== $this->find($input->name(), null, null, $index, $type)) {
+        if (null !== $this->find($input->name(), null, null, $type, $index) && !$replace) {
             throw new \Exception("{$class->getShortName()} '{$input->name()}' already exists in this collection");
         }
 
         if (true == $replace && null !== $index) {
-            $this->items[$class->getShortName()][$index] = $argument;
+            $this->items[$class->getShortName()][$index] = $input;
         } else {
             $this->items[$class->getShortName()][] = $input;
         }
