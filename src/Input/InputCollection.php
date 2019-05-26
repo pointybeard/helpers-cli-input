@@ -74,19 +74,19 @@ class InputCollection
 
     public static function merge(self ...$collections): self
     {
-        $items = [];
+        $inputs = [];
 
         foreach ($collections as $c) {
-            foreach ($c->items() as $type => $items) {
+            foreach ($c->getItems() as $type => $items) {
                 foreach ($items as $item) {
-                    $items[] = $item;
+                    $inputs[] = $item;
                 }
             }
         }
 
         $mergedCollection = new self();
 
-        foreach ($items as $input) {
+        foreach ($inputs as $input) {
             try {
                 $mergedCollection->append($input, true);
             } catch (\Exception $ex) {
