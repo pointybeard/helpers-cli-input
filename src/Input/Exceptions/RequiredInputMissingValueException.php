@@ -18,7 +18,6 @@ class RequiredInputMissingValueException extends \Exception
             'a value is required for %s',
             $input->getDisplayName()
         ), $code, $previous);
-
     }
 
     public function getInput(): Input\AbstractInputType

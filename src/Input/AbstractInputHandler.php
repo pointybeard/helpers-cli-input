@@ -42,12 +42,12 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
     public function validate(): void
     {
         foreach ($this->collection->getItems() as $type => $items) {
-            foreach($items as $input) {
+            foreach ($items as $input) {
                 self::checkRequiredAndRequiredValue($input, $this->input);
 
                 // There is a default value, input has not been set, and there
                 // is no validator
-                if(
+                if (
                     null !== $input->default() &&
                     null === $this->find($input->name()) &&
                     null === $input->validator()
@@ -55,7 +55,7 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
                     $result = $input->default();
 
                 // Input has been set and it has a validator
-                } elseif(null !== $this->find($input->name()) && null !== $input->validator()) {
+                } elseif (null !== $this->find($input->name()) && null !== $input->validator()) {
                     $validator = $input->validator();
 
                     if ($validator instanceof \Closure) {
@@ -66,11 +66,11 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
 
                     try {
                         $result = $validator->validate($input, $this);
-                    } catch(\Exception $ex) {
+                    } catch (\Exception $ex) {
                         throw new Exceptions\InputValidationFailedException($input, 0, $ex);
                     }
 
-                // No default, no validator, but may or may not have been set
+                    // No default, no validator, but may or may not have been set
                 } else {
                     $result = $this->find($input->name());
                 }
@@ -82,14 +82,14 @@ abstract class AbstractInputHandler implements Interfaces\InputHandlerInterface
 
     public function find(string $name)
     {
-        if(isset($this->input[$name])) {
+        if (isset($this->input[$name])) {
             return $this->input[$name];
         }
 
         // Check the collection to see if anything responds to $name
-        foreach($this->collection->getItems() as $type => $items) {
-            foreach($items as $ii) {
-                if($ii->respondsTo($name) && isset($this->input[$ii->name()])) {
+        foreach ($this->collection->getItems() as $type => $items) {
+            foreach ($items as $ii) {
+                if ($ii->respondsTo($name) && isset($this->input[$ii->name()])) {
                     return $this->input[$ii->name()];
                 }
             }

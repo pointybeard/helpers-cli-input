@@ -148,7 +148,7 @@ class Argv extends Input\AbstractInputHandler
                             ? $a->name()
                             : $argumentCount
                     ] = $token;
-                    $argumentCount++;
+                    ++$argumentCount;
                     break;
             }
             $it->next();

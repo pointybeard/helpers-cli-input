@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace pointybeard\Helpers\Cli\Input\Types;
 
-use pointybeard\Helpers\Functions\Flags;
 use pointybeard\Helpers\Functions\Strings;
 use pointybeard\Helpers\Functions\Cli;
 use pointybeard\Helpers\Cli\Input;
 
 class Option extends Input\AbstractInputType
 {
-    public function getDisplayName(): string {
+    public function getDisplayName(): string
+    {
         return '-'.$this->name();
     }
 

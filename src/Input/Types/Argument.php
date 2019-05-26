@@ -10,10 +10,9 @@ use pointybeard\Helpers\Functions\Cli;
 
 class Argument extends Input\AbstractInputType
 {
-
-    public function __construct(string $name = null, int $flags = null, string $description = null, object $validator = null, $default=null)
+    public function __construct(string $name = null, int $flags = null, string $description = null, object $validator = null, $default = null)
     {
-        if(null === $validator) {
+        if (null === $validator) {
             $validator = function (Input\AbstractInputType $input, Input\AbstractInputHandler $context) {
                 // This dummy validator is necessary otherwise the argument
                 // value is ALWAYS set to default (most often NULL) regardless
@@ -25,7 +24,8 @@ class Argument extends Input\AbstractInputType
         parent::__construct($name, $flags, $description, $validator, $default);
     }
 
-    public function getDisplayName(): string {
+    public function getDisplayName(): string
+    {
         return strtoupper($this->name());
     }
 

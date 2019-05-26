@@ -21,18 +21,18 @@ class LongOption extends Input\AbstractInputType
 
     public function respondsTo(string $name): bool
     {
-        return ($name == $this->name || $name == $this->short);
+        return $name == $this->name || $name == $this->short;
     }
 
-    public function getDisplayName(): string {
-
+    public function getDisplayName(): string
+    {
         $short =
             null !== $this->short()
             ? '-'.$this->short().', '
             : null
         ;
 
-        return sprintf("%s--%s", $short, $this->name());
+        return sprintf('%s--%s', $short, $this->name());
     }
 
     public function __toString(): string

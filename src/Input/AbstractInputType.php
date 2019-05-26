@@ -25,7 +25,7 @@ abstract class AbstractInputType implements Interfaces\InputTypeInterface
         $this->default = $default;
     }
 
-    public function __call($name, array $args=[])
+    public function __call($name, array $args = [])
     {
         if (empty($args)) {
             return $this->$name;
@@ -43,7 +43,7 @@ abstract class AbstractInputType implements Interfaces\InputTypeInterface
 
     public function respondsTo(string $name): bool
     {
-        return ($name == $this->name);
+        return $name == $this->name;
     }
 
     public function getType(): string

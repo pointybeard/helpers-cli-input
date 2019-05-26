@@ -30,42 +30,45 @@ class InputCollection
         return $this;
     }
 
-    public function find(string $name, array $restrictToType=null, array $excludeType=null, &$type = null, &$index = null): ?AbstractInputType
+    public function find(string $name, array $restrictToType = null, array $excludeType = null, &$type = null, &$index = null): ?AbstractInputType
     {
-        foreach($this->items as $type => $items) {
-
+        foreach ($this->items as $type => $items) {
             // Check if we're restricting to or excluding specific types
-            if(null !== $restrictToType && !in_array($type, $restrictToType)) {
+            if (null !== $restrictToType && !in_array($type, $restrictToType)) {
                 continue;
-
-            } elseif(null !== $excludeType && in_array($type, $excludeType)) {
+            } elseif (null !== $excludeType && in_array($type, $excludeType)) {
                 continue;
             }
 
-            foreach($items as $index => $item) {
-                if($item->respondsTo($name)) {
+            foreach ($items as $index => $item) {
+                if ($item->respondsTo($name)) {
                     return $item;
                 }
             }
         }
         $type = null;
         $index = null;
+
         return null;
     }
 
-    public function getTypes(): array {
+    public function getTypes(): array
+    {
         return array_keys($this->items);
     }
 
-    public function getItems(): array {
+    public function getItems(): array
+    {
         return $this->items;
     }
 
-    public function getItemsByType(string $type): array {
+    public function getItemsByType(string $type): array
+    {
         return $this->items[$type] ?? [];
     }
 
-    public function getItemByIndex(string $type, int $index): ?AbstractInputType {
+    public function getItemByIndex(string $type, int $index): ?AbstractInputType
+    {
         return $this->items[$type][$index] ?? null;
     }
 
@@ -74,8 +77,8 @@ class InputCollection
         $items = [];
 
         foreach ($collections as $c) {
-            foreach($c->items() as $type => $items) {
-                foreach($items as $item) {
+            foreach ($c->items() as $type => $items) {
+                foreach ($items as $item) {
                     $items[] = $item;
                 }
             }

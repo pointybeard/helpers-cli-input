@@ -23,7 +23,7 @@ $collection = (new Input\InputCollection())
             ->validator(new Input\Validator(
                 function (Input\AbstractInputType $input, Input\AbstractInputHandler $context) {
                     // Make sure verbosity level never goes above 3
-                    return min(3, (int)$context->find('v'));
+                    return min(3, (int) $context->find('v'));
                 }
             ))
     )
@@ -57,10 +57,10 @@ $collection = (new Input\InputCollection())
 
 // Get the supplied input. Passing the collection will make the handler bind values
 // and validate the input according to our collection
-try{
+try {
     $argv = Input\InputHandlerFactory::build('Argv', $collection);
-} catch(\Exception $ex) {
-    echo "Error when attempting to bind values to collection. Returned: " . $ex->getMessage() . PHP_EOL;
+} catch (\Exception $ex) {
+    echo 'Error when attempting to bind values to collection. Returned: '.$ex->getMessage().PHP_EOL;
     exit;
 }
 
@@ -73,7 +73,7 @@ echo Cli\manpage(
     Colour::FG_GREEN,
     Colour::FG_WHITE,
     [
-        'Examples' => 'php -f example/example.php -- -vvv -d example/example.json import'
+        'Examples' => 'php -f example/example.php -- -vvv -d example/example.json import',
     ]
 ).PHP_EOL.PHP_EOL;
 
@@ -91,7 +91,6 @@ echo Cli\manpage(
 //
 // Examples:
 // php -f example/example.php -- -vvvs -d example/example.json import
-
 
 var_dump($argv->find('action'));
 // string(6) "import"
