@@ -8,9 +8,9 @@ use pointybeard\Helpers\Cli\Input;
 
 interface InputHandlerInterface
 {
-    public function bind(Input\InputCollection $inputCollection, bool $skipValidation = false): bool;
+    public function bind(Input\InputCollection $inputCollection, ?int $flags = null): bool;
 
-    public function validate(): void;
+    public function validate(?int $flags = null): void;
 
     public function find(string $name);
 
