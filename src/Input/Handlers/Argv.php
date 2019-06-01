@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 namespace pointybeard\Helpers\Cli\Input\Handlers;
-
+use pointybeard\Helpers\Cli\Input\Exceptions;
 use pointybeard\Helpers\Cli\Input;
 use pointybeard\Helpers\Functions\Flags;
+use pointybeard\Helpers\Functions\Debug;
 
 class Argv extends Input\AbstractInputHandler
 {
@@ -61,9 +62,31 @@ class Argv extends Input\AbstractInputHandler
         return $result;
     }
 
+    protected function findOptionInCollection(string $name): ?Input\AbstractInputType
+    {
+        $option = $this->collection->find($name);
+        if(!($option instanceof Input\AbstractInputType)) {
+            return null;
+        }
+
+        return $option;
+    }
+
+    protected function findArgumentInCollection(int $index, string $token): ?Input\AbstractInputType
+    {
+        $arguments = $this->collection->getItemsByType('Argument');
+        $position = 0;
+        foreach($arguments as $a) {
+            if($position == $index) {
+                return $a;
+            }
+            $position++;
+        }
+        return null;
+    }
+
     protected function parse(): bool
     {
-        // So some parsing here.
         $it = new \ArrayIterator($this->argv);
 
         $position = 0;
@@ -83,7 +106,7 @@ class Argv extends Input\AbstractInputHandler
                         $value = true;
                     }
 
-                    $o = $this->collection->find($name);
+                    $o = $this->findOptionInCollection($name);
 
                     $this->input[
                         $o instanceof Input\AbstractInputType
@@ -99,7 +122,7 @@ class Argv extends Input\AbstractInputHandler
                     // Determine if we're expecting a value.
                     // It also might have a long option equivalent, so we need
                     // to look for that too.
-                    $o = $this->collection->find($name);
+                    $o = $this->findOptionInCollection($name);
 
                     // This could also be an incrementing value
                     // and needs to be added up. E.g. e.g. -vvv or -v -v -v
@@ -142,7 +165,8 @@ class Argv extends Input\AbstractInputHandler
                     // Arguments are positional, so we need to keep a track
                     // of the index and look at the collection for an argument
                     // with the same index
-                    $a = $this->collection->getItemByIndex('Argument', $argumentCount);
+                    $a = $this->findArgumentInCollection($argumentCount, $token);
+
                     $this->input[
                         $a instanceof Input\AbstractInputType
                             ? $a->name()
