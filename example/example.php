@@ -9,13 +9,13 @@ use pointybeard\Helpers\Functions\Cli;
 
 // Define what we are expecting to get from the command line
 $collection = (new Input\InputCollection())
-    ->append(
+    ->add(
         Input\InputTypeFactory::build('Argument')
             ->name('action')
             ->flags(Input\AbstractInputType::FLAG_REQUIRED)
             ->description('The name of the action to perform')
     )
-    ->append(
+    ->add(
         Input\InputTypeFactory::build('IncrementingFlag')
             ->name('v')
             ->flags(Input\AbstractInputType::FLAG_OPTIONAL | Input\AbstractInputType::FLAG_TYPE_INCREMENTING)
@@ -27,7 +27,7 @@ $collection = (new Input\InputCollection())
                 }
             ))
     )
-    ->append(
+    ->add(
         Input\InputTypeFactory::build('LongOption')
             ->name('data')
             ->short('d')
@@ -90,16 +90,13 @@ echo Cli\manpage(
 // -d, --data=VALUE              Path to the input JSON data
 //
 // Examples:
-// php -f example/example.php -- -vvvs -d example/example.json import
+// php -f example/example.php -- -vvv -d example/example.json import
 
 var_dump($argv->find('action'));
 // string(6) "import"
 
 var_dump($argv->find('v'));
 //int(3)
-
-var_dump($argv->find('s'));
-//bool(true)
 
 var_dump($argv->find('data'));
 // class stdClass#11 (1) {
