@@ -1,7 +1,7 @@
 # PHP Helpers: Command-line Input and Input Type Handlers
 
--   Version: v1.1.4
--   Date: May 27 2019
+-   Version: v1.2.0
+-   Date: June 01 2019
 -   [Release notes](https://github.com/pointybeard/helpers-cli-input/blob/master/CHANGELOG.md)
 -   [GitHub repository](https://github.com/pointybeard/helpers-cli-input)
 
@@ -9,7 +9,7 @@ Collection of classes for handling argv (and other) input when calling command-l
 
 ## Installation
 
-This library is installed via [Composer](http://getcomposer.org/). To install, use `composer require pointybeard/helpers-cli-input` or add `"pointybeard/helpers-cli-input": "~1.1"` to your `composer.json` file.
+This library is installed via [Composer](http://getcomposer.org/). To install, use `composer require pointybeard/helpers-cli-input` or add `"pointybeard/helpers-cli-input": "~1.2.0"` to your `composer.json` file.
 
 And run composer to update your dependencies:
 
@@ -26,7 +26,7 @@ To include all the [PHP Helpers](https://github.com/pointybeard/helpers) package
 
 Include this library in your PHP files with `use pointybeard\Helpers\Cli`. See example code in `example/example.php`. The example code can be run with the following command:
 
-    php -f example/example.php -- -vvvs -d example/example.json import
+    php -f example/example.php -- -vvv -d example/example.json import
 
 ## Support
 
