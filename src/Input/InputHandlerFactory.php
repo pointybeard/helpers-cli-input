@@ -9,8 +9,6 @@ use pointybeard\Helpers\Foundation\Factory;
 
 final class InputHandlerFactory extends Factory\AbstractFactory
 {
-    const FLAG_SKIP_VALIDATION = 0x0001;
-
     public static function getTemplateNamespace(): string
     {
         return __NAMESPACE__.'\\Handlers\\%s';
@@ -34,7 +32,7 @@ final class InputHandlerFactory extends Factory\AbstractFactory
         if ($collection instanceof InputCollection) {
             $handler->bind(
                 $collection,
-                Flags\is_flag_set($flags, self::FLAG_SKIP_VALIDATION)
+                $flags
             );
         }
 
