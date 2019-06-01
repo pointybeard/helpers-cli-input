@@ -4,96 +4,150 @@ declare(strict_types=1);
 
 namespace pointybeard\Helpers\Cli\Input;
 
-class InputCollection
+class InputCollection implements \Iterator, \Countable
 {
     private $items = [];
+    private $position = 0;
+
+    public const POSITION_APPEND = 0x0001;
+    public const POSITION_PREPEND = 0x0002;
 
     // Prevents the class from being instanciated
     public function __construct()
     {
+        $this->position = 0;
     }
 
-    public function append(Interfaces\InputTypeInterface $input, bool $replace = false): self
+    public function current(): mixed
     {
-        $class = new \ReflectionClass($input);
+        return $this->items[$this->position];
+    }
 
-        if (null !== $this->find($input->name(), null, null, $type, $index) && !$replace) {
-            throw new \Exception("{$class->getShortName()} '{$input->name()}' already exists in this collection");
+    public function key(): scalar
+    {
+        return $this->position;
+    }
+
+    public function next(): void
+    {
+        ++$this->position;
+    }
+
+    public function rewind(): void
+    {
+        $this->position = 0;
+    }
+
+    public function valid(): bool
+    {
+        return isset($this->items[$this->position]);
+    }
+
+    public function count() : int {
+        return count($this->items);
+    }
+
+    public function exists(string $name, &$index=null): bool {
+        return (null !== $this->find($name, null, null, $index));
+    }
+
+    public function remove(string $name): self {
+        if(!$this->exists($name, $index)) {
+            throw new \Exception("Input '{$name}' does not exist in this collection");
+        }
+        unset($this->items[$index]);
+        return $this;
+    }
+
+    public function add(Interfaces\InputTypeInterface $input, bool $replace = false, int $position=self::POSITION_APPEND): self
+    {
+        if($this->exists($input->name(), $index) && !$replace) {
+            throw new \Exception(
+                (new \ReflectionClass($input))->getShortName()." '{$input->name()}' already exists in this collection"
+            );
         }
 
         if (true == $replace && null !== $index) {
-            $this->items[$class->getShortName()][$index] = $input;
+            $this->items[$index] = $input;
         } else {
-            $this->items[$class->getShortName()][] = $input;
+            if($position == self::POSITION_PREPEND) {
+                array_unshift($this->items, $input);
+            } else {
+                array_push($this->items, $input);
+            }
         }
 
         return $this;
     }
 
-    public function find(string $name, array $restrictToType = null, array $excludeType = null, &$type = null, &$index = null): ?AbstractInputType
+    public function find(string $name, array $restrictToType = null, array $excludeType = null, &$index = null): ?AbstractInputType
     {
-        foreach ($this->items as $type => $items) {
+        foreach ($this->items as $index => $input) {
             // Check if we're restricting to or excluding specific types
-            if (null !== $restrictToType && !in_array($type, $restrictToType)) {
+            if (null !== $restrictToType && !in_array($input->getType(), $restrictToType)) {
                 continue;
-            } elseif (null !== $excludeType && in_array($type, $excludeType)) {
+            } elseif (null !== $excludeType && in_array($input->getType(), $excludeType)) {
                 continue;
             }
 
-            foreach ($items as $index => $item) {
-                if ($item->respondsTo($name)) {
-                    return $item;
-                }
+            if ($input->respondsTo($name)) {
+                return $input;
             }
+
         }
-        $type = null;
         $index = null;
-
         return null;
     }
 
     public function getTypes(): array
     {
-        return array_keys($this->items);
+        $types = [];
+        foreach($this->items as $input) {
+            $types[] = $input->getType();
+        }
+        return array_unique($types);
     }
 
-    public function getItems(): array
+    public function getItems(): \Iterator
     {
-        return $this->items;
+        return (new \ArrayObject($this->items))->getIterator();
     }
 
-    public function getItemsByType(string $type): array
+    public function getItemsByType(string $type): \Iterator
     {
-        return $this->items[$type] ?? [];
+        return new InputTypeFilterIterator(
+            $this->getItems(),
+            [$type],
+            InputTypeFilterIterator::FILTER_INCLUDE
+        );
     }
 
-    public function getItemByIndex(string $type, int $index): ?AbstractInputType
+    public function getItemsExcludeByType(string $type): \Iterator
     {
-        return $this->items[$type][$index] ?? null;
+        return new InputTypeFilterIterator(
+            $this->getItems(),
+            [$type],
+            InputTypeFilterIterator::FILTER_EXCLUDE
+        );
+    }
+
+    public function getItemByIndex(int $index): ?AbstractInputType
+    {
+        return $this->items[$index] ?? null;
     }
 
     public static function merge(self ...$collections): self
     {
-        $inputs = [];
 
+        $iterator = new \AppendIterator;
         foreach ($collections as $c) {
-            foreach ($c->getItems() as $type => $items) {
-                foreach ($items as $item) {
-                    $inputs[] = $item;
-                }
-            }
+            $iterator->append($c->getItems());
         }
 
         $mergedCollection = new self();
-
-        foreach ($inputs as $input) {
-            try {
-                $mergedCollection->append($input, true);
-            } catch (\Exception $ex) {
-                // Already exists, so skip it.
-            }
+        foreach ($iterator as $input) {
+            $mergedCollection->add($input, true);
         }
-
         return $mergedCollection;
     }
 }
