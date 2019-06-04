@@ -8,14 +8,12 @@ use pointybeard\Helpers\Foundation\Factory;
 
 final class InputTypeFactory extends Factory\AbstractFactory
 {
-    use Factory\Traits\hasSimpleFactoryBuildMethodTrait;
-
-    public static function getTemplateNamespace(): string
+    public function getTemplateNamespace(): string
     {
         return __NAMESPACE__.'\\Types\\%s';
     }
 
-    public static function getExpectedClassType(): ?string
+    public function getExpectedClassType(): ?string
     {
         return __NAMESPACE__.'\\Interfaces\\InputTypeInterface';
     }

@@ -9,27 +9,34 @@ use pointybeard\Helpers\Foundation\Factory;
 
 final class InputHandlerFactory extends Factory\AbstractFactory
 {
-    public static function getTemplateNamespace(): string
+    public function getTemplateNamespace(): string
     {
         return __NAMESPACE__.'\\Handlers\\%s';
     }
 
-    public static function getExpectedClassType(): ?string
+    public function getExpectedClassType(): ?string
     {
         return __NAMESPACE__.'\\Interfaces\\InputHandlerInterface';
     }
 
-    public static function build(string $name, InputCollection $collection = null, int $flags = null): Interfaces\InputHandlerInterface
+    public static function build(string $name, ...$arguments): object
     {
+
+        // Since passing flags is optional, we can use array_pad
+        // to ensure there are always at least 2 elements in $arguments
+        [$collection, $flags] = array_pad($arguments, 2, null);
+
+        $factory = new self;
+
         try {
-            $handler = self::instanciate(
-                self::generateTargetClassName($name)
+            $handler = $factory->instanciate(
+                $factory->generateTargetClassName($name)
             );
         } catch (\Exception $ex) {
             throw new Exceptions\UnableToLoadInputHandlerException($name, 0, $ex);
         }
 
-        if ($collection instanceof InputCollection) {
+        if (null !== $collection) {
             $handler->bind(
                 $collection,
                 $flags
