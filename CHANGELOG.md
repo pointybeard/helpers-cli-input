@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.1][]
+#### Changed
+-   Updated `InputHandlerFactory` and `InputTypeFactory` to work with changes in `pointybeard/helpers-foundation-factory` 1.0.2
+
 ## [1.2.0][]
 #### Added
 -   Added `InputTypeFilterIterator` class
@@ -73,6 +77,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 -   Initial release
 
+[1.2.1]: https://github.com/pointybeard/helpers-functions-cli/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.4...1.2.0
 [1.1.4]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/pointybeard/helpers-functions-cli/compare/1.1.2...1.1.3
