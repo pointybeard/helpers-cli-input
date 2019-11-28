@@ -4,7 +4,6 @@ declare(strict_types=1);
 include __DIR__.'/../vendor/autoload.php';
 
 use pointybeard\Helpers\Cli\Input;
-use pointybeard\Helpers\Cli\Colour\Colour;
 use pointybeard\Helpers\Functions\Cli;
 
 // Define what we are expecting to get from the command line
@@ -63,34 +62,6 @@ try {
     echo 'Error when attempting to bind values to collection. Returned: '.$ex->getMessage().PHP_EOL;
     exit;
 }
-
-// Display the manual in green text
-echo Cli\manpage(
-    basename(__FILE__),
-    '1.0.2',
-    'An example script for the PHP Helpers: Command-line Input and Input Type Handlers composer library (pointybeard/helpers-cli-input).',
-    $collection,
-    Colour::FG_GREEN,
-    Colour::FG_WHITE,
-    [
-        'Examples' => 'php -f example/example.php -- -vvv -d example/example.json import',
-    ]
-).PHP_EOL.PHP_EOL;
-
-// example.php 1.0.2, An example script for the PHP Helpers: Command-line Input
-// and Input Type Handlers composer library (pointybeard/helpers-cli-input).
-// Usage: example.php [OPTIONS]... ACTION...
-//
-// Arguments:
-// ACTION              The name of the action to perform
-//
-// Options:
-// -v                            verbosity level. -v (errors only), -vv
-//                               (warnings and errors), -vvv (everything).
-// -d, --data=VALUE              Path to the input JSON data
-//
-// Examples:
-// php -f example/example.php -- -vvv -d example/example.json import
 
 var_dump($argv->find('action'));
 // string(6) "import"

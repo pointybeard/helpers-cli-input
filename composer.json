@@ -16,11 +16,6 @@
         "pointybeard/helpers-foundation-factory": "~1.0",
         "pointybeard/helpers-functions-flags": "~1.0"
     },
-    "require-dev": {
-        "pointybeard/helpers-functions-strings": "~1.1.0",
-        "pointybeard/helpers-cli-colour": "~1.0",
-        "pointybeard/helpers-functions-cli": "~1.1.0"
-    },
     "support": {
         "issues": "https://github.com/pointybeard/helpers-cli-input/issues",
         "wiki": "https://github.com/pointybeard/helpers-cli-input/wiki"
