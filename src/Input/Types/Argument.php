@@ -72,6 +72,6 @@ class Argument extends Input\AbstractInputType
             $second[$ii] = $secondaryLineLeadPadding.$second[$ii];
         }
 
-        return $first.implode($second, PHP_EOL);
+        return $first.implode(PHP_EOL, $second);
     }
 }
